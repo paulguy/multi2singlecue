@@ -24,29 +24,35 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    fprintf(stderr, "Reading cue sheet\n");
     cd = getCdFromCueFile(argv[1]);
     if(cd == NULL) {
         fprintf(stderr, "Failed to load cue file.\n");
         exit(EXIT_FAILURE);
     }
 
+    fprintf(stderr, "Fixing indices\n");
     if(updateStartsAndLengths(cd) != 0) {
         fprintf(stderr, "A problem occured while updating tracks.\n");
         exit(EXIT_FAILURE);
     }
 
+    fprintf(stderr, "Creating single bin");
     if(makeBin(cd, argv[3]) != 0) {
         fprintf(stderr, "Failed to make single bin.\n");
         exit(EXIT_FAILURE);
     }
 
     updateFileNames(cd, argv[3]);
+    fprintf(stderr, "\n");
 
+    fprintf(stderr, "Writing out new cue sheet\n");
     if(cf_print(argv[2], &cueformat, cd) != 0) {
         fprintf(stderr, "Failed to write cue sheet %s.", argv[2]);
         exit(EXIT_FAILURE);
     }
 
+    fprintf(stderr, "Done\n");
     return(EXIT_SUCCESS);
 }
 
@@ -105,7 +111,7 @@ error0:
 }
 
 int makeBin(Cd *cd, const char *name) {
-    int tracks, i;
+    int tracks, i, counter;
     Track *t;
     char *inname;
     FILE *inbin, *outbin;
@@ -135,7 +141,13 @@ int makeBin(Cd *cd, const char *name) {
             goto error2;
         }
 
+        counter = 0;
         for(;;) {
+            counter++;
+            if(counter == 10) {
+                fprintf(stderr, ".");
+                counter = 0;
+            }
             dataread = fread(buffer, 1, BLOCKSIZE, inbin);
             if(dataread < BLOCKSIZE) {
                 if(feof(inbin)) {
