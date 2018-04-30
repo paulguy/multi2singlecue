@@ -1,0 +1,10 @@
+multi2singlecue - Utility to convert multi-bin bin/cue to single-bin
+
+Does not handle any audio formats, not even wav, just bins.
+
+USAGE: multi2singlecue <in-cue> <out-cue> <out-bin>
+
+Building it requires the Musepack libcuefile available from:
+https://musepack.net/index.php?pg=src
+
+Should work fine on any of linux, mac, windows or anything really.
